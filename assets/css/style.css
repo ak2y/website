@@ -1,0 +1,235 @@
+/* Minimal dark portfolio w/ navbar — Bootstrap v5.3.8 compatible */
+
+:root{
+  --card-bg: rgba(255,255,255,.04);
+  --card-brd: rgba(255,255,255,.08);
+  --shadow: 0 18px 55px rgba(0,0,0,.35);
+  --radius: 1.1rem;
+
+  /* Background preset variables (overridden by body.bg-*) */
+  --bg-a: rgba(13,110,253,.30);
+  --bg-b: rgba(109, 67, 255, .20);
+  --bg-c: rgba(32, 201, 151, .14);
+  --bg-d: rgba(255,193,7,.10);
+  --grid-opacity: .08;
+
+  /* optional user background (set by JS if bgUpload is enabled) */
+  --user-bg: none;
+}
+
+html{ scroll-behavior: smooth; }
+body{
+  min-height: 100vh;
+  background: #0b0f17;
+}
+
+/* ---------- Background presets ----------
+   Switch by changing <body class="bg-..."> or using the navbar dropdown.
+*/
+body.bg-aurora{
+  --bg-a: rgba(13,110,253,.32);
+  --bg-b: rgba(109, 67, 255, .22);
+  --bg-c: rgba(32, 201, 151, .14);
+  --bg-d: rgba(255,193,7,.10);
+  --grid-opacity: .08;
+}
+body.bg-nebula{
+  --bg-a: rgba(111, 66, 193, .30);
+  --bg-b: rgba(13, 110, 253, .20);
+  --bg-c: rgba(214, 51, 132, .14);
+  --bg-d: rgba(32, 201, 151, .08);
+  --grid-opacity: .06;
+}
+body.bg-ocean{
+  --bg-a: rgba(13, 202, 240, .22);
+  --bg-b: rgba(13, 110, 253, .22);
+  --bg-c: rgba(32, 201, 151, .12);
+  --bg-d: rgba(255,255,255,.06);
+  --grid-opacity: .09;
+}
+body.bg-sunset{
+  --bg-a: rgba(253, 126, 20, .22);
+  --bg-b: rgba(214, 51, 132, .20);
+  --bg-c: rgba(13,110,253,.14);
+  --bg-d: rgba(255,193,7,.12);
+  --grid-opacity: .05;
+}
+body.bg-mono{
+  --bg-a: rgba(255,255,255,.10);
+  --bg-b: rgba(255,255,255,.06);
+  --bg-c: rgba(255,255,255,.04);
+  --bg-d: rgba(255,255,255,.03);
+  --grid-opacity: .10;
+}
+
+/* Background layers */
+.bg-wrap{
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+}
+.bg-grad{
+  position: absolute;
+  inset: -30%;
+  background:
+    radial-gradient(closest-side, var(--bg-a), transparent 65%),
+    radial-gradient(closest-side, var(--bg-b), transparent 70%),
+    radial-gradient(closest-side, var(--bg-c), transparent 70%),
+    radial-gradient(closest-side, var(--bg-d), transparent 75%);
+  filter: blur(46px);
+  animation: drift 16s ease-in-out infinite alternate;
+}
+@keyframes drift{
+  from{ transform: translate3d(-2%, -1%, 0) scale(1.05); }
+  to{ transform: translate3d(2%, 3%, 0) scale(1.12); }
+}
+
+/* Subtle grid overlay (toggle intensity via --grid-opacity) */
+.bg-grid{
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to right, rgba(255,255,255,var(--grid-opacity)) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,var(--grid-opacity)) 1px, transparent 1px);
+  background-size: 80px 80px;
+  mask-image: radial-gradient(circle at 50% 25%, rgba(0,0,0,1), rgba(0,0,0,.2) 55%, rgba(0,0,0,0) 75%);
+  opacity: .65;
+}
+
+/* Optional uploaded background */
+body.has-user-bg .bg-grad{
+  background:
+    linear-gradient(180deg, rgba(0,0,0,.70), rgba(0,0,0,.85)),
+    var(--user-bg);
+  background-size: cover;
+  background-position: center;
+  filter: none;
+  animation: none;
+}
+body.has-user-bg .bg-grid{ display: none; }
+
+/* subtle noise overlay */
+.bg-noise{
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.25'/%3E%3C/svg%3E");
+  opacity: .18;
+  mix-blend-mode: overlay;
+}
+
+/* Reduce motion */
+@media (prefers-reduced-motion: reduce){
+  .bg-grad{ animation: none !important; }
+}
+
+/* ---------- Navbar ---------- */
+.nav-glass{
+  backdrop-filter: blur(12px);
+  background: rgba(0,0,0,.35);
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.nav-avatar{
+  border-radius: 999px;
+  object-fit: cover;
+  border: 1px solid rgba(255,255,255,.14);
+}
+.page-pad{
+  padding-top: 6.2rem; /* room for fixed navbar */
+}
+
+/* Reveal animation */
+.reveal{
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity .55s ease, transform .55s ease;
+}
+.reveal.is-visible{
+  opacity: 1;
+  transform: translateY(0);
+}
+@media (prefers-reduced-motion: reduce){
+  .reveal{ transition: none !important; transform: none !important; opacity: 1 !important; }
+}
+
+/* Top card */
+.topcard{
+  margin-top: 0.9rem;
+  border-radius: calc(var(--radius) + .35rem);
+  background: linear-gradient(180deg, var(--card-bg), rgba(255,255,255,.02));
+  border: 1px solid var(--card-brd);
+  box-shadow: var(--shadow);
+  padding: 1.25rem;
+}
+@media (min-width: 768px){
+  .topcard{ padding: 1.6rem; }
+}
+.avatar-img{
+  width: 132px;
+  height: 132px;
+  object-fit: cover;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.12);
+  box-shadow: 0 12px 32px rgba(0,0,0,.35);
+}
+
+/* Content card */
+.card-min{
+  border-radius: var(--radius);
+  background: linear-gradient(180deg, var(--card-bg), rgba(255,255,255,.02));
+  border: 1px solid var(--card-brd);
+  box-shadow: 0 18px 55px rgba(0,0,0,.18);
+}
+
+/* Chips & list items */
+.chip{
+  display: inline-flex;
+  padding: .35rem .6rem;
+  border-radius: .8rem;
+  background: rgba(13,110,253,.10);
+  border: 1px solid rgba(13,110,253,.22);
+  font-size: .95rem;
+}
+
+.mini-list{ display: grid; gap: .85rem; }
+.mini-item{
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: 12px;
+  align-items: start;
+  padding: .8rem;
+  border-radius: .95rem;
+  background: rgba(255,255,255,.035);
+  border: 1px solid rgba(255,255,255,.07);
+}
+.mini-icon{
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.08);
+}
+
+.item{
+  padding: .9rem;
+  border-radius: .95rem;
+  background: rgba(255,255,255,.035);
+  border: 1px solid rgba(255,255,255,.07);
+}
+
+.contact-link{
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  text-decoration: none;
+  color: inherit;
+  padding: .6rem .75rem;
+  border-radius: .9rem;
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.06);
+}
+.contact-link:hover{
+  background: rgba(255,255,255,.06);
+}
